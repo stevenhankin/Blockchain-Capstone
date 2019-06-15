@@ -1,13 +1,16 @@
-var ERC721MintableComplete = artifacts.require('ERC721Mintable');
+var ERC721Mintable = artifacts.require('ERC721Mintable');
 
 contract('ERC721Mintable', accounts => {
 
     const account_one = accounts[0];
     const account_two = accounts[1];
 
+    const tokenName = "House Token";
+    const tokenSymbol = "HTX";
+
     describe('match erc721 spec', function () {
         beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+            this.contract = await ERC721Mintable.new(tokenName, tokenSymbol, {from: account_one});
 
             // TODO: mint multiple tokens
         })
@@ -31,8 +34,8 @@ contract('ERC721Mintable', accounts => {
     });
 
     describe('have ownership properties', function () {
-        beforeEach(async function () { 
-            this.contract = await ERC721MintableComplete.new({from: account_one});
+        beforeEach(async function () {
+            this.contract = await ERC721Mintable.new(tokenName, tokenSymbol, {from: account_one});
         })
 
         it('should fail when minting when address is not contract owner', async function () { 
