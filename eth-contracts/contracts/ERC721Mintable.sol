@@ -369,7 +369,7 @@ contract ERC721 is Pausable, ERC165 {
      * @return bool whether the call correctly returned the expected magic value
      */
     function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory _data)
-    internal pure returns (bool)
+    internal returns (bool)
     {
         if (!to.isContract()) {
             return true;
@@ -378,7 +378,6 @@ contract ERC721 is Pausable, ERC165 {
         bytes4 retval = IERC721Receiver(to).onERC721Received(msg.sender, from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
-
 
 }
 
