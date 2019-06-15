@@ -629,8 +629,6 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
         return _tokenURIs[tokenId];
     }
 
-
-
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
     // It should be the _baseTokenURI + the tokenId in string form
     // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
@@ -649,12 +647,10 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
         _tokenURIs[tokenId] = strConcat(_baseTokenURI, uri);
     }
 
-
 }
 
 //  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
-contract CustomERC721Token is ERC721Metadata {
-
+contract ERC721Mintable is ERC721Metadata {
 
     //  1) Pass in appropriate values for the inherited ERC721Metadata contract
     //      - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/

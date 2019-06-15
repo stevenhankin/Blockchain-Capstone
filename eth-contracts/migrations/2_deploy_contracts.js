@@ -1,8 +1,12 @@
 // migrating the appropriate contracts
-var SquareVerifier = artifacts.require("./SquareVerifier.sol");
-var SolnSquareVerifier = artifacts.require("./SolnSquareVerifier.sol");
+const ERC721Mintable = artifacts.require("./ERC721Mintable.sol");
+// const SquareVerifier = artifacts.require("./SquareVerifier.sol");
+// const SolnSquareVerifier = artifacts.require("./SolnSquareVerifier.sol");
 
-module.exports = function(deployer) {
-  deployer.deploy(SquareVerifier);
-  deployer.deploy(SolnSquareVerifier);
+module.exports = function(deployer, network, accounts) {
+  const name = "House Token";
+  const symbol = "HTX";
+  deployer.deploy(ERC721Mintable,name, symbol);
+  // deployer.deploy(SquareVerifier);
+  // deployer.deploy(SolnSquareVerifier);
 };
