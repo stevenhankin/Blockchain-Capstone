@@ -4,29 +4,121 @@ import 'openzeppelin-solidity/contracts/utils/Address.sol';
 import 'openzeppelin-solidity/contracts/drafts/Counters.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
+import 'openzeppelin-solidity/contracts/access/roles/PauserRole.sol';
 import "./Oraclize.sol";
+
 
 contract Ownable {
     //  TODO's
     //  1) create a private '_owner' variable of type address with a public getter function
-    //  2) create an internal constructor that sets the _owner var to the creater of the contract 
+    address private _owner;
+
+    event TransferredOwnership (address previousOwner, address owner);
+
+    function external getOwner()
+    public view returns (address) {
+        return _owner;
+    }
+
+    //  2) create an internal constructor that sets the _owner var to the creater of the contract
+    constructor() public {
+        _owner = msg.sender;
+    }
+
+
     //  3) create an 'onlyOwner' modifier that throws if called by any account other than the owner.
+    modifier onlyOwner() {
+        require(msg.sender === _owner, "Only the contract owner can use this method");
+    }
+
     //  4) fill out the transferOwnership function
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
+    modifier isValidEthAddress(_address) {
+        require (_address > address(0x0), "Cannot specify an empty address");
+    }
 
-    function transferOwnership(address newOwner) public onlyOwner {
+    function transferOwnership(address newOwner) public onlyOwner isValidEthAddress(newOwner) {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
-
+        address previousOwner = _owner;
+        _owner = newOwner;
+        emit TransferredOwnership(previousOwner, _owner);
     }
 }
 
-//  TODO's: Create a Pausable contract that inherits from the Ownable contract
-//  1) create a private '_paused' variable of type bool
-//  2) create a public setter using the inherited onlyOwner modifier 
-//  3) create an internal constructor that sets the _paused variable to false
-//  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
-//  5) create a Paused & Unpaused event that emits the address that triggered the event
+/**
+ * Based on openzeppelin-solidity/contracts/lifecycle/Pausable.sol
+ * Does not inherit the Pauser Role contract, since that is covered by Ownable
+ */
+contract Pausable is Ownable {
+    //  TODO's: Create a Pausable contract that inherits from the Ownable contract
+    //  1) create a private '_paused' variable of type bool
+    //  2) create a public setter using the inherited onlyOwner modifier
+    //  3) create an internal constructor that sets the _paused variable to false
+    //  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
+    //  5) create a Paused & Unpaused event that emits the address that triggered the event
+    /**
+     * @dev Emitted when the pause is triggered by a pauser (`account`).
+     */
+    event Paused(address account);
+
+    /**
+     * @dev Emitted when the pause is lifted by a pauser (`account`).
+     */
+    event Unpaused(address account);
+
+    bool private _paused;
+
+    /**
+     * @dev Initializes the contract in unpaused state. Assigns the Pauser role
+     * to the deployer.
+     */
+    constructor () internal {
+        _paused = false;
+    }
+
+    /**
+     * @dev Returns true if the contract is paused, and false otherwise.
+     */
+    function paused() public view returns (bool) {
+        return _paused;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is not paused.
+     */
+    modifier whenNotPaused() {
+        require(!_paused, "Pausable: paused");
+        _;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is paused.
+     */
+    modifier whenPaused() {
+        require(_paused, "Pausable: not paused");
+        _;
+    }
+
+    /**
+     * @dev Called by a pauser to pause, triggers stopped state.
+     */
+    function pause() public onlyOwner whenNotPaused {
+        _paused = true;
+        emit Paused(msg.sender);
+    }
+
+    /**
+     * @dev Called by a pauser to unpause, returns to normal state.
+     */
+    function unpause() public onlyOwner whenPaused {
+        _paused = false;
+        emit Unpaused(msg.sender);
+    }
+}
+
+
+
 
 contract ERC165 {
     bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
@@ -105,27 +197,33 @@ contract ERC721 is Pausable, ERC165 {
     function balanceOf(address owner) public view returns (uint256) {
         // TODO return the token balance of given address
         // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
+        return current(_ownedTokensCount);
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
         // TODO return the owner of the given tokenId
+        return _tokenOwner[tokenId];
     }
 
-//    @dev Approves another address to transfer the given token ID
-    function approve(address to, uint256 tokenId) public {
+    //    @dev Approves another address to transfer the given token ID
+    function approve(address to, uint256 tokenId) public onlyOwner {
         
         // TODO require the given address to not be the owner of the tokenId
+        require(to != ownerOf(tokenId), 'Cannot transfer ownership to current owner (makes no sense)');
 
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
+        require(msg.sender == getOwner() || isApprovedForAll(to,msg.sender) );
 
         // TODO add 'to' address to token approvals
+        _tokenApprovals[tokenId] = to;
 
         // TODO emit Approval Event
-
+        emit Approval(getOwner(),to,tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
         // TODO return token approval if it exists
+        return  _tokenApprovals[tokenId];
     }
 
     /**
