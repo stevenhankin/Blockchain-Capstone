@@ -33,19 +33,26 @@ contract SolnSquareVerifier is ERC721Mintable {
     // TODO Create an event to emit when a solution is added
     event SolutionAccepted (uint _index, address _address);
 
+    function _getHash(string memory inputA, string memory inputB) private pure
+    returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
+    }
 
-    function getSolution (string memory inputA, string memory inputB) public
+    // Utility to check whether a solution exists for an input pair
+    function getSolution (string memory inputA, string memory inputB) public view
     returns (uint, address)
     {
-        bytes32 hash = keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
+        bytes32 hash = _getHash(inputA, inputB);
         Solution memory solution = _solutions[hash];
         return (solution._index, solution._address);
     }
 
     // TODO Create a function to add the solutions to the array and emit the event
     function addSolution (string memory inputA, string memory inputB, uint index, address anAddress) public {
-        bytes32 hash = keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
-        require (_solutions[hash]._index == 0, "Solution already mapped");
+        bytes32 hash = _getHash(inputA, inputB);
+        Solution memory solution = _solutions[hash];
+        require (solution._address == address(0), "Solution already mapped");
         _solutions[hash] =  Solution (index, anAddress);
         emit SolutionAccepted(index, anAddress);
     }
