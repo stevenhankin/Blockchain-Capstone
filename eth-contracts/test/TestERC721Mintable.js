@@ -130,9 +130,6 @@ contract('ERC721Mintable', accounts => {
         });
 
 
-        // function transferOwnership(address newOwner) public onlyOwner {
-        //     _transferOwnership(newOwner);
-        // }
         it('should transfer token from one owner to another', async function () {
             // ARRANGE
             const [account1,account2] = [accounts[1],accounts[2]];

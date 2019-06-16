@@ -16,6 +16,7 @@ contract('SquareVerifier', async () => {
         },
         "inputs": ["0x000000000000000000000000000000000000000000000000000000000001bba1", "0x0000000000000000000000000000000000000000000000000000000000000001"]
     };
+    const {proof, inputs} = proofJSON;
 
     beforeEach(function() {
         return SquareVerifier.new()
@@ -26,9 +27,6 @@ contract('SquareVerifier', async () => {
 
 
     describe('verifies properly', function () {
-
-        const {proof, inputs} = proofJSON;
-
 
         it('should accept a correct proof', async function () {
             // ARRANGE
