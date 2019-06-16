@@ -16,12 +16,14 @@ contract SolnSquareVerifier is ERC721Mintable {
 
     // TODO define a solutions struct that can hold an index & an address
     struct Solution {
-        uint _index;
-        address _address;
+        uint[2] a;
+        uint[2][2] b;
+        uint[2] c;
+        uint[2] input;
     }
 
-//     TODO define an array of the above struct
-//    solutions[] storage mySolutions;
+    //     TODO define an array of the above struct
+    //    solutions[] storage mySolutions;
 
     // TODO define a mapping to store unique solutions submitted
     /**
@@ -29,32 +31,41 @@ contract SolnSquareVerifier is ERC721Mintable {
      */
     mapping(bytes32 => Solution) private _solutions;
 
+    // Also store token id -> hash, to make lookup easier when minting
+    mapping(uint => bytes32) private _tokenToSolution;
 
     // TODO Create an event to emit when a solution is added
-    event SolutionAccepted (uint _index, address _address);
+    event SolutionAccepted (uint tokenId);
 
-    function _getHash(string memory inputA, string memory inputB) private pure
-    returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
-    }
+    //    function _getHash(string memory inputA, string memory inputB) private pure
+    //    returns (bytes32)
+    //    {
+    //        return keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
+    //    }
+    //
+    //    // Utility to check whether a solution exists for an input pair
+    //    function getSolution (string memory inputA, string memory inputB) public view
+    //    returns (uint, address)
+    //    {
+    //        bytes32 hash = _getHash(inputA, inputB);
+    //        Solution memory solution = _solutions[hash];
+    //        return (solution._index, solution._address);
+    //    }
 
-    // Utility to check whether a solution exists for an input pair
-    function getSolution (string memory inputA, string memory inputB) public view
-    returns (uint, address)
-    {
-        bytes32 hash = _getHash(inputA, inputB);
-        Solution memory solution = _solutions[hash];
-        return (solution._index, solution._address);
-    }
 
     // TODO Create a function to add the solutions to the array and emit the event
-    function addSolution (string memory inputA, string memory inputB, uint index, address anAddress) public {
-        bytes32 hash = _getHash(inputA, inputB);
+    // a/b/c/input comes from Zokrates proof
+    // token Id is the desired token to mint
+    // 'to' will be the address token is assigned to
+    function addSolution(uint[2] memory a, uint[2][2] memory b, uint[2] memory c, uint[2] memory input, uint tokenId) public {
+        bytes32 hash = keccak256(abi.encodePacked(a, b, c, input));
+        // Check if hash already exists
         Solution memory solution = _solutions[hash];
-        require (solution._address == address(0), "Solution already mapped");
-        _solutions[hash] =  Solution (index, anAddress);
-        emit SolutionAccepted(index, anAddress);
+        require(solution.input[0] == 0 && solution.input[1] == 0, "Solution already used (not unique)");
+        // Add new hash entry
+        _solutions[hash] = Solution(a, b, c, input);
+        _tokenToSolution[tokenId] = hash;
+        emit SolutionAccepted(tokenId);
     }
 
 
@@ -63,7 +74,8 @@ contract SolnSquareVerifier is ERC721Mintable {
     //  - make sure you handle metadata as well as tokenSupply
     function mint(address to, uint256 tokenId, string memory tokenURI) public
     returns (bool){
-        return squareVerifier.mint(to, tokenId, tokenURI); //
+        require(_tokenToSolution[tokenId] != 0, "Mint request denied: No proof has been supplied for token");
+        return super.mint(to, tokenId, tokenURI);
     }
 
 }
