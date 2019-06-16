@@ -646,12 +646,12 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
         require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
         string memory fullURI = strConcat(_baseTokenURI, uri);
         _tokenURIs[tokenId] = fullURI;
-//        revert(fullURI);
     }
 
 }
 
-//  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata contract. You can name this contract as you please
+//  TODO's: Create CustomERC721Token contract that inherits from the ERC721Metadata
+//  contract. You can name this contract as you please
 contract ERC721Mintable is ERC721Metadata {
 
     //  1) Pass in appropriate values for the inherited ERC721Metadata contract
