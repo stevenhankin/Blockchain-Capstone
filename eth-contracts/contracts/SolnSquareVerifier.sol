@@ -15,7 +15,7 @@ contract SolnSquareVerifier is ERC721Mintable {
     }
 
     // TODO define a solutions struct that can hold an index & an address
-    struct solution {
+    struct Solution {
         uint _index;
         address _address;
     }
@@ -27,19 +27,27 @@ contract SolnSquareVerifier is ERC721Mintable {
     /**
      * @dev mapping to store unique solutions submitted
      */
-    mapping(bytes32 => solution) private _solutions;
+    mapping(bytes32 => Solution) private _solutions;
 
 
     // TODO Create an event to emit when a solution is added
-    event Solution (uint _index, address _address);
+    event SolutionAccepted (uint _index, address _address);
 
+
+    function getSolution (string memory inputA, string memory inputB) public
+    returns (uint, address)
+    {
+        bytes32 hash = keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
+        Solution memory solution = _solutions[hash];
+        return (solution._index, solution._address);
+    }
 
     // TODO Create a function to add the solutions to the array and emit the event
     function addSolution (string memory inputA, string memory inputB, uint index, address anAddress) public {
         bytes32 hash = keccak256(abi.encodePacked(sha256(abi.encodePacked(inputA, inputB))));
         require (_solutions[hash]._index == 0, "Solution already mapped");
-        _solutions[hash] =  solution (index, anAddress);
-        emit Solution(index, anAddress);
+        _solutions[hash] =  Solution (index, anAddress);
+        emit SolutionAccepted(index, anAddress);
     }
 
 

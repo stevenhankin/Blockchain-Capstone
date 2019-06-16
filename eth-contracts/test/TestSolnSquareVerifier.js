@@ -4,9 +4,6 @@ const SolnSquareVerifier = artifacts.require('SolnSquareVerifier');
 contract('SolnSquareVerifier', async (accounts) => {
 
     const owner = accounts[0]
-    // console.log({SolnSquareVerifier});
-
-    console.log({contract})
 
     describe('accepts proofs', function () {
 
@@ -34,6 +31,7 @@ contract('SolnSquareVerifier', async (accounts) => {
             assert.equal(revert, false, `Should not revert`);
         });
 
+
         it('should reject a proof if it has already been used', async function () {
             // ARRANGE
 
@@ -51,7 +49,6 @@ contract('SolnSquareVerifier', async (accounts) => {
             // ASSERT
             assert.equal(revert, true, `Should revert when proof already used`);
         })
-
     });
 
 
