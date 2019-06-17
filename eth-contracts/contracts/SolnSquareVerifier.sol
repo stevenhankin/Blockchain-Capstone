@@ -55,6 +55,7 @@ contract SolnSquareVerifier is ERC721Mintable {
         return super.mint(to, tokenId, tokenURI);
     }
 
+
     // Function to mint without requiring Proof, for purpose of testing only
     function mintNoProofRequired(address to, uint256 tokenId, string memory tokenURI) public
     returns (bool){
