@@ -54,6 +54,13 @@ contract SolnSquareVerifier is ERC721Mintable {
         require(_tokenToSolution[tokenId] != 0, "Mint request denied: No proof has been supplied for token");
         return super.mint(to, tokenId, tokenURI);
     }
+
+    // Function to mint without requiring Proof, for purpose of testing only
+    function mintNoProofRequired(address to, uint256 tokenId, string memory tokenURI) public
+    returns (bool){
+        return super.mint(to, tokenId, tokenURI);
+    }
+
 }
 
 
