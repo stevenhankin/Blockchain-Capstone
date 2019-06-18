@@ -26,6 +26,9 @@ contract SolnSquareVerifier is ERC721Mintable {
      */
     mapping(bytes32 => Solution) private _solutions;
 
+    // Map the hashes to a bool that is true if the hash exists
+    mapping(bytes32 => bool) private _solutionForHash;
+
     // Also store token id -> hash, to make lookup easier when minting
     mapping(uint => bytes32) private _tokenToSolution;
 
@@ -39,11 +42,12 @@ contract SolnSquareVerifier is ERC721Mintable {
     function addSolution(uint[2] memory a, uint[2][2] memory b, uint[2] memory c, uint[2] memory input, uint tokenId) public {
         bytes32 hash = keccak256(abi.encodePacked(a, b, c, input));
         // Check if hash already exists
-        Solution memory solution = _solutions[hash];
-        require(solution.input[0] == 0 && solution.input[1] == 0, "Solution already used (not unique)");
+        require(!_solutionForHash[hash], "Solution already used (not unique)");
         // Add new hash entry
         _solutions[hash] = Solution(a, b, c, input, tokenId);
         _tokenToSolution[tokenId] = hash;
+        // and also set mapping to prevent same solution being used again
+        _solutionForHash[hash] = true;
         emit SolutionAccepted(tokenId);
     }
 
