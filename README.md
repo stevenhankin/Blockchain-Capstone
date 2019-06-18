@@ -5,20 +5,33 @@ Ethereum test network and interacting with minted tokens
 (using MyEtherWallet) via OpenSea to create a decentralized 
 house listing service
 
+
+## OpenSea Storefront
+A marketplace has been created at the following address:
+https://rinkeby.opensea.io/storefront/house-token-v4
+This was built from an ERC721 Contract that was compiled using Truffle
+and deployed to Rinkeby, whereby it was interacted with via
+MyEtherWallet.com to mint tokens that represent houses.
+
 ## Requirements
 * Node v10.15.3
 * Truffle v5.0.18 
 
-## How to test
-In a shell run the following to start a local test node:
+## Installation
 ```
 git clone https://github.com/stevenhankin/Blockchain-Capstone
 cd Blockchain-Capstone
 npm install
-cd eth-contracts
+```
+
+
+## How to test
+In shell 1 run the following to start a local test node:
+```
+cd Blockchain-Capstone/eth-contracts
 ganache-cli
 ```
-In another shell run the Truffle tests:
+In shell 2 run the Truffle tests:
 ```
 cd Blockchain-Capstone/eth-contracts
 truffle test
@@ -28,16 +41,17 @@ truffle test
 
 |Item|Value|
 |----|----------|
-|Name|HouseToken|
-|Token|HTX|
-|SquareVerifier contract|0x6B6855088b7dB58073FAd21dCe3Ae7bf964e4607|
-|SolnSquareVerifier contract|0xEe6Cf419A5956536852bcb6EEE2c84da1a1986aA|
-|Owner address|0x274a6145618c69d3b1818d162b5fd8415f193897|
+|Token Name|HouseToken|
+|Token Symbol|HTX|
+|SquareVerifier Address|0x27cacD3B5cB0Bb6ab94f697d2b8F346f31acB5bF|
+|SolnSquareVerifier Address|0x3505E372DB4124781822C0057ebda7fC0934E70C|
+|Owner Address|0x76e776E11dC19fc10A1F0547f0d953EdAb3dfd69|
 
 
-### Contract ABI
+### Contract ABI (SolnSquareVerifier)
+The following is extracted from the build file ```eth-contracts/build/contracts/SolnSquareVerifier.json```
 ```
-[
+  [
     {
       "constant": true,
       "inputs": [
